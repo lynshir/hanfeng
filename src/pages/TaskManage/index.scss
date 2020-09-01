@@ -1,0 +1,198 @@
+$bg: #f0f2f5;
+$blue: #1890ff;
+
+.stepWrap {
+  flex: 1;
+  height: 55px;
+  align-items: center;
+  background-color: $bg;
+  margin-top: 30px;
+  padding: 0 50px;
+  margin-bottom: 20px;
+}
+
+.ant-steps-item-process
+  > .ant-steps-item-container
+  > .ant-steps-item-content
+  > .ant-steps-item-title {
+  &::after,
+  &::before {
+    background-color: #b1b1b1;
+  }
+}
+
+.ant-steps-item-wait
+  > .ant-steps-item-container
+  > .ant-steps-item-content
+  > .ant-steps-item-title::after {
+  background-color: #b1b1b1;
+}
+
+.w300 {
+  width: 300px;
+}
+
+.w100 {
+  width: 100px;
+}
+
+.w500 {
+  width: 500px;
+}
+
+.taskNumInfo {
+  padding: 20px 50px !important;
+}
+
+.tc {
+  text-align: center;
+}
+.mustTit {
+  &::before {
+    display: inline-block;
+    margin-right: 4px;
+    color: #ff4d4f;
+    font-size: 14px;
+    font-family: SimSun, sans-serif;
+    line-height: 1;
+    content: '*';
+  }
+}
+.baseConfig {
+  .productList {
+    .ant-form-item {
+      .ant-form-item {
+        margin-bottom: 0;
+      }
+    }
+    .ant-form-item-label {
+      text-align: left;
+    }
+    .ant-form-item-control-input-content {
+      display: flex;
+      flex-direction: row;
+      align-content: center;
+      align-items: center;
+      .ant-input-number {
+        width: 100px;
+      }
+      button {
+        margin-left: 20px;
+      }
+    }
+    .rowItem {
+    }
+    .priceRange {
+      .ant-form-item {
+        margin: 0;
+      }
+      label:first-child {
+        padding-left: 12px;
+      }
+    }
+    .formDvd.ant-divider {
+      margin: 15px 0;
+      border-top-color: #333;
+    }
+  }
+
+  .editorTool {
+    width: 90%;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+  }
+
+  .timeRange {
+    .dateSetWrap {
+      padding: 0 60px;
+    }
+  }
+  .taskStep {
+    .flexr {
+      .ant-form-item-control-input-content {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 0;
+        align-items: center;
+        .ant-form-item {
+          margin-bottom: 0;
+        }
+      }
+    }
+    .explain {
+      padding: 10px;
+      background-color: $bg;
+    }
+  }
+
+  .ptImg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .platPannel {
+    width: 330px;
+    border: 1px solid #ddd;
+    margin-right: 1%;
+    margin-top: 10px;
+    height: 80px;
+    padding: 10px;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .plWrap {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: center;
+    align-items: center;
+  }
+
+  .titWrap {
+    margin-left: 10px;
+
+    .tit {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .tip {
+      font-size: 12px;
+    }
+  }
+
+  .plCheck {
+    position: absolute;
+    right: 10px;
+    color: $blue;
+    font-size: 20px;
+  }
+
+  .activePan {
+    border: 2px solid $blue;
+  }
+
+  .notOpen {
+    background-color: $bg;
+    cursor: not-allowed;
+  }
+}
+
+.taskListPannel {
+  .taskPanImg {
+    width: 100px;
+    height: 100px;
+  }
+  .smark {
+    width: 66px;
+    height: 25px;
+    border-radius: 35px;
+    text-align: center;
+    line-height: 25px;
+    color: #fff;
+    background-color: #9e9e9e;
+    font-size: 12px;
+    margin-left: 10px;
+  }
+}

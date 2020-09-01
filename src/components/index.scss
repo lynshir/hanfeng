@@ -1,0 +1,53 @@
+.pageTitWrap {
+  .pageTit {
+    color: #000;
+    font-size: 22px;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+
+  .pageTitDes {
+    font-size: 14px;
+    color: #999;
+  }
+}
+
+.cardTit {
+  font-size: 22px;
+  color: #303030;
+  font-weight: 500;
+  position: relative;
+  line-height: 28px;
+  padding-left: 15px;
+
+  &::before {
+    position: absolute;
+    left: 0;
+    top: 4px;
+    height: 20px;
+    width: 5px;
+    background: #061535;
+    content: ' ';
+  }
+}
+
+.stepTit {
+  font-size: 18px;
+  color: #303030;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  .stepNum {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background-color: #000;
+    color: #fff;
+    font-size: 14px;
+    text-align: center;
+    line-height: 25px;
+    font-weight: 600;
+    margin-right: 20px;
+  }
+}

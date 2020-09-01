@@ -1,0 +1,54 @@
+.container {
+  padding: 50px 65px 50px;
+  background-color: #fff;
+  margin: 0 20px;
+  flex: auto; // height: 100%;
+
+  .pannel {
+    width: 100%;
+    border: 1px solid rgb(240, 238, 238);
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .06);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .userInfo {
+    flex: 1;
+  }
+
+  .wxWrap {
+    width: 200px;
+    border-left: 1px dashed #ddd;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .totalWrap {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .grow1 {
+    flex-grow: 1;
+    align-items: center;
+  }
+
+  .circle {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background-color: #c0c4cc;
+    border-radius: 50%;
+    margin: 0 30px;
+  }
+
+  .notiWrap {
+    justify-content: space-between;
+    margin: 10px 0;
+  }
+
+  .mt30 {
+    margin-bottom: 30px;
+  }
+
+}
