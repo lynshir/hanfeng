@@ -1,7 +1,7 @@
 import React from 'react';
 import { extendObservable, action, toJS } from 'mobx';
 import { message } from 'antd';
-import { commonGet } from '@/utils/egFetch';
+import { commonGet } from '@utils/egFetch';
 
 export default class Store {
   constructor(options) {
@@ -20,13 +20,13 @@ export default class Store {
       title: '商品价格区间',
       dataIndex: 'jgqj',
       key: 'jgqj',
-      align: 'center'
+      align: 'center',
     },
     {
       title: '价格',
       dataIndex: 'price',
       key: 'price',
-      align: 'center'
+      align: 'center',
     },
   ];
 

@@ -12,8 +12,12 @@ function PageTitle({ title, desc }) {
   );
 }
 
-function CardTitle({ title }) {
-  return <div className="cardTit">{title}</div>;
+function CardTitle({ title, ...rest }) {
+  return (
+    <div className="cardTit mt20 mb20" {...rest}>
+      {title}
+    </div>
+  );
 }
 
 function StepTitle({ step, title, extra }) {

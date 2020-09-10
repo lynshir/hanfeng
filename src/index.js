@@ -12,6 +12,8 @@ import './assets/font/style.css';
 import './index.css';
 import Dashboard from './pages/Dashboard';
 import TaskManageRouter from './pages/TaskManage/index';
+import FinanceRouter from './pages/Finance/index';
+import AccountRouter from './pages/Account/index';
 
 const { Header, Sider, Content } = Layout;
 const { SubMenu } = Menu;
@@ -38,7 +40,7 @@ function App() {
           >
             <Menu
               theme="light"
-              defaultOpenKeys={['taskManage']}
+              defaultOpenKeys={['accountManage']}
               defaultSelectedKeys={[pathname || 'dashboard']}
               mode="inline"
             >
@@ -52,6 +54,34 @@ function App() {
                 <Menu.Item key="taskList">
                   <NavLink to="/member-center/taskList">任务列表</NavLink>
                 </Menu.Item>
+                <Menu.Item key="taskReview">
+                  <NavLink to="/member-center/taskReview">任务审核</NavLink>
+                </Menu.Item>
+                <Menu.Item key="commentTask">
+                  <NavLink to="/member-center/commentTask">评论任务</NavLink>
+                </Menu.Item>
+              </SubMenu>
+              <SubMenu key="finance" icon={<ContainerOutlined />} title="财务管理">
+                <Menu.Item key="recharge">
+                  <NavLink to="/member-center/recharge">充值</NavLink>
+                </Menu.Item>
+                <Menu.Item key="withdraw">
+                  <NavLink to="/member-center/withdraw">提现</NavLink>
+                </Menu.Item>
+                <Menu.Item key="fd">
+                  <NavLink to="/member-center/fundingDetail">资金明细</NavLink>
+                </Menu.Item>
+              </SubMenu>
+              <SubMenu key="accountManage" icon={<ContainerOutlined />} title="账户管理">
+                <Menu.Item key="shop">
+                  <NavLink to="/member-center/shop">店铺管理</NavLink>
+                </Menu.Item>
+                <Menu.Item key="account">
+                  <NavLink to="/member-center/accountNo">账号管理</NavLink>
+                </Menu.Item>
+                <Menu.Item key="workOrder">
+                  <NavLink to="/member-center/workOrder">客服订单</NavLink>
+                </Menu.Item>
               </SubMenu>
             </Menu>
           </Sider>
@@ -62,6 +92,12 @@ function App() {
               <Switch>
                 {/* <Route exact path='/' component={ProductDetail}></Route> */}
                 <TaskManageRouter />
+              </Switch>
+              <Switch>
+                <FinanceRouter />
+              </Switch>
+              <Switch>
+                <AccountRouter />
               </Switch>
             </Content>
           </Layout>

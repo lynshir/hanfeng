@@ -2,18 +2,17 @@ import React, { useState, Component } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
-import RelTask from './RelTask';
-import TaskList from './TaskList';
-import TaskReview from './TaskReview';
-import CommentTask from './CommentTask';
+import Recharge from './Recharge';
+import Withdraw from './Withdraw';
+import FundingDetail from './FundingDetail';
 
-function TaskManage() {
+function FinanceRouter() {
   return (
     <>
-      <Route path="/member-center/relTask" component={RelTask} />
-      <Route path="/member-center/taskList" component={TaskList} />
-      <Route path="/member-center/taskReview" component={TaskReview} />
-      <Route path="/member-center/commentTask" component={CommentTask} />
+      <Route path="/member-center/recharge" component={Recharge} />
+      <Route path="/member-center/withdraw" component={Withdraw} />
+      <Route path="/member-center/fundingDetail" component={FundingDetail} />
+
       {/* <Route
         path="/member-center/customSort"
         render={() => (
@@ -30,4 +29,4 @@ function TaskManage() {
   );
 }
 
-export default TaskManage;
+export default FinanceRouter;

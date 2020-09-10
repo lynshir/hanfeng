@@ -11,34 +11,19 @@ $blue: #1890ff;
   margin-bottom: 20px;
 }
 
-.ant-steps-item-process
-  > .ant-steps-item-container
-  > .ant-steps-item-content
-  > .ant-steps-item-title {
+.ant-steps-item-process>.ant-steps-item-container>.ant-steps-item-content>.ant-steps-item-title {
+
   &::after,
   &::before {
     background-color: #b1b1b1;
   }
 }
 
-.ant-steps-item-wait
-  > .ant-steps-item-container
-  > .ant-steps-item-content
-  > .ant-steps-item-title::after {
+.ant-steps-item-wait>.ant-steps-item-container>.ant-steps-item-content>.ant-steps-item-title::after {
   background-color: #b1b1b1;
 }
 
-.w300 {
-  width: 300px;
-}
 
-.w100 {
-  width: 100px;
-}
-
-.w500 {
-  width: 500px;
-}
 
 .taskNumInfo {
   padding: 20px 50px !important;
@@ -47,6 +32,7 @@ $blue: #1890ff;
 .tc {
   text-align: center;
 }
+
 .mustTit {
   &::before {
     display: inline-block;
@@ -58,6 +44,7 @@ $blue: #1890ff;
     content: '*';
   }
 }
+
 .baseConfig {
   .productList {
     .ant-form-item {
@@ -65,31 +52,38 @@ $blue: #1890ff;
         margin-bottom: 0;
       }
     }
+
     .ant-form-item-label {
       text-align: left;
     }
+
     .ant-form-item-control-input-content {
       display: flex;
       flex-direction: row;
       align-content: center;
       align-items: center;
+
       .ant-input-number {
         width: 100px;
       }
+
       button {
         margin-left: 20px;
       }
     }
-    .rowItem {
-    }
+
+    .rowItem {}
+
     .priceRange {
       .ant-form-item {
         margin: 0;
       }
+
       label:first-child {
         padding-left: 12px;
       }
     }
+
     .formDvd.ant-divider {
       margin: 15px 0;
       border-top-color: #333;
@@ -107,6 +101,7 @@ $blue: #1890ff;
       padding: 0 60px;
     }
   }
+
   .taskStep {
     .flexr {
       .ant-form-item-control-input-content {
@@ -114,11 +109,13 @@ $blue: #1890ff;
         flex-direction: row;
         margin-bottom: 0;
         align-items: center;
+
         .ant-form-item {
           margin-bottom: 0;
         }
       }
     }
+
     .explain {
       padding: 10px;
       background-color: $bg;
@@ -184,6 +181,7 @@ $blue: #1890ff;
     width: 100px;
     height: 100px;
   }
+
   .smark {
     width: 66px;
     height: 25px;

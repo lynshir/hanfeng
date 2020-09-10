@@ -1,7 +1,19 @@
 // 框架
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { Row, Col, Select, Button, Space, Input, Radio, Form, InputNumber, DatePicker } from 'antd';
+import {
+  Row,
+  Col,
+  Select,
+  Button,
+  Space,
+  Input,
+  Radio,
+  Form,
+  InputNumber,
+  DatePicker,
+  Pagination,
+} from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { toJS } from 'mobx';
 import shortid from 'shortid';
@@ -83,6 +95,19 @@ class TaskPannel extends Component {
             </Col>
           </Row>
         </div>
+        <Row justify="flex-end">
+          <Pagination
+            total={85}
+            showTotal={(total) => `共 ${total} 条`}
+            defaultPageSize={20}
+            defaultCurrent={1}
+            showSizeChanger={true}
+            size="small"
+            pageSizeOptions={[10, 20, 50, 100]}
+            current={1} //当前页数
+            onChange={() => {}}
+          />
+        </Row>
       </div>
     );
   }

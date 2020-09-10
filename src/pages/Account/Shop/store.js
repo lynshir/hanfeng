@@ -10,7 +10,7 @@ import toolFn from '@utils/toolFn';
 
 const undef = void 0;
 
-export default class TaskListModel {
+export default class ShopStore {
   constructor(options) {
     extendObservable(this, {
       parent: {},
@@ -42,11 +42,50 @@ export default class TaskListModel {
         ywc: 10,
         wwc: 20,
       },
+      get dataSource() {
+        const data = [];
+        for (let i = 0; i < 100; i++) {
+          data.push({
+            key: i,
+            sjzh: `接单时间 ${i}`,
+            cjsj: 32,
+            payAccout: `London Park no. ${i}`,
+          });
+        }
+        return data;
+      },
+      get filter() {
+        return this.taskReviewRef.getFieldsValue();
+      },
       ...(options || {}),
     });
   }
 
-  setTaskListRef = (ref) => (this.taskListRef = ref);
+  setTaskReviewRef = (ref) => (this.taskReviewRef = ref);
 
-  onSearch = action(() => {});
+  onSearch = action(() => {
+    console.log(this.filter);
+  });
+
+  getColunms = () => {
+    return [
+      {
+        title: '商家账号',
+        dataIndex: 'sjzh',
+      },
+      {
+        title: '创建时间',
+        dataIndex: 'cjsj',
+      },
+      {
+        title: '操作',
+        dataIndex: 'cz',
+      },
+    ].map((v) => {
+      return {
+        ...v,
+        width: 150,
+      };
+    });
+  };
 }

@@ -167,6 +167,18 @@ code {
   height: 100%;
 }
 
+.w300 {
+  width: 300px;
+}
+
+.w100 {
+  width: 100px;
+}
+
+.w500 {
+  width: 500px;
+}
+
 .content-wrapper .ant-layout-content {
   height: 100vh;
 }

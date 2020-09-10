@@ -1,7 +1,7 @@
 import React from 'react';
 import { extendObservable, action, toJS } from 'mobx';
 import { message } from 'antd';
-import { commonGet } from '@/utils/egFetch';
+import { commonGet } from '@utils/egFetch';
 import { cloneDeep } from 'lodash';
 import moment from 'moment';
 import { extendMoment } from 'moment-range';
