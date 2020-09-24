@@ -1,0 +1,22 @@
+.loginWrap {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+#basic {
+  width: 30%;
+}
+.loginTit {
+  margin-bottom: 50px;
+  font-size: 20px;
+  color: #1890ff;
+}
+.register {
+  font-size: 14px;
+  cursor: pointer;
+  color: #1890ff;
+  padding: 4px 15px;
+}

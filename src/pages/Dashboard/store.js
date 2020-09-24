@@ -2,7 +2,7 @@ import React from 'react';
 import { extendObservable, action, toJS } from 'mobx';
 import { message } from 'antd';
 import { commonGet } from '@utils/egFetch';
-
+import _ from 'lodash';
 export default class Store {
   constructor(options) {
     extendObservable(this, {
@@ -11,6 +11,7 @@ export default class Store {
         { jgqj: '00-100', price: '100.00' },
         { jgqj: '00-100', price: '100.00' },
       ],
+      userInfo: {},
       ...(options || {}),
     });
   }
@@ -29,6 +30,23 @@ export default class Store {
       align: 'center',
     },
   ];
+
+  @action
+  getUser = () => {
+    commonGet('/user/getUser').then((v) => {
+      if (v.status === 'Successful') {
+        if (_.isObject(v.data)) {
+          this.userInfo = v.data;
+        }
+      }
+    });
+  };
+
+  //获取邀请码
+  @action
+  getInvit = () => {
+    commonGet('/user/getInvitationCode').then((v) => {});
+  };
 
   @action
   getCategory = (targetOption, parentCategoryId) => {

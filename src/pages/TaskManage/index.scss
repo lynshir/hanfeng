@@ -11,19 +11,22 @@ $blue: #1890ff;
   margin-bottom: 20px;
 }
 
-.ant-steps-item-process>.ant-steps-item-container>.ant-steps-item-content>.ant-steps-item-title {
-
+.ant-steps-item-process
+  > .ant-steps-item-container
+  > .ant-steps-item-content
+  > .ant-steps-item-title {
   &::after,
   &::before {
     background-color: #b1b1b1;
   }
 }
 
-.ant-steps-item-wait>.ant-steps-item-container>.ant-steps-item-content>.ant-steps-item-title::after {
+.ant-steps-item-wait
+  > .ant-steps-item-container
+  > .ant-steps-item-content
+  > .ant-steps-item-title::after {
   background-color: #b1b1b1;
 }
-
-
 
 .taskNumInfo {
   padding: 20px 50px !important;
@@ -43,6 +46,11 @@ $blue: #1890ff;
     line-height: 1;
     content: '*';
   }
+}
+
+.wh100 {
+  width: 150px;
+  height: 150px;
 }
 
 .baseConfig {
@@ -72,7 +80,8 @@ $blue: #1890ff;
       }
     }
 
-    .rowItem {}
+    .rowItem {
+    }
 
     .priceRange {
       .ant-form-item {
@@ -87,6 +96,17 @@ $blue: #1890ff;
     .formDvd.ant-divider {
       margin: 15px 0;
       border-top-color: #333;
+    }
+  }
+  .proLinkPannel {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 60%;
+  }
+
+  .proLinkInfo {
+    div {
+      margin-bottom: 10px;
     }
   }
 

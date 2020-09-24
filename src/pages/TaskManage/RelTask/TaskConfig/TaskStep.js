@@ -48,13 +48,17 @@ class TaskStep extends Component {
         </div>
         <Form
           initialValues={{
-            collect: 1,
-            collectReview: 1,
-            collectScreenShot: 1,
-            extReq: 1,
-            extReqScreenShot: 1,
-            joinCart: 1,
-            confirmOrderScreenShot: 1,
+            collect: 0,
+            collectReview: 0,
+            collectScreenShot: 0,
+            extReq: 0,
+            extReqReview: 1,
+            extReqScreenShot: 0,
+            joinCart: 0,
+            joinCartReview: 0,
+            joinCartScreenShot: 0,
+            confirmOrderScreenShot: 0,
+            confirmOrder: 1,
           }}
           {...formItemLayout}
           ref={setTaskStepRef}
@@ -64,30 +68,30 @@ class TaskStep extends Component {
           <Form.Item label="是否需要收藏商品" className="flexr">
             <Form.Item name="collect">
               <Radio.Group>
-                <Radio value={0}>收藏商品</Radio>
-                <Radio value={1}>不收藏商品</Radio>
+                <Radio value={1}>收藏商品</Radio>
+                <Radio value={0}>不收藏商品</Radio>
               </Radio.Group>
             </Form.Item>
             <span className="redTxt mr10">+0元</span>
             选择收藏，则买手在执行该任务时需要收藏商品
           </Form.Item>
-          {collect === 0 && (
+          {collect === 1 && (
             <Form.Item label="审核方式" className="flexr">
               <Form.Item name="collectReview">
                 <Radio.Group>
-                  <Radio value={1}>审核商品</Radio>
+                  <Radio value={0}>系统审核</Radio>
                 </Radio.Group>
               </Form.Item>
               系统自动审核即用户提交图片后，系统自动通过
             </Form.Item>
           )}
 
-          {collect === 0 && (
+          {collect === 1 && (
             <Form.Item label="截图" className="flexr">
               <Form.Item name="collectScreenShot">
                 <Radio.Group>
-                  <Radio value={0}>需要截图</Radio>
-                  <Radio value={1}>无需截图</Radio>
+                  <Radio value={1}>需要截图</Radio>
+                  <Radio value={0}>无需截图</Radio>
                 </Radio.Group>
               </Form.Item>
               <div>
@@ -95,35 +99,36 @@ class TaskStep extends Component {
               </div>
             </Form.Item>
           )}
-          {collect === 0 && <div className="explain">收藏商品后立即开启下一步任务</div>}
+          {collect === 1 && <div className="explain">收藏商品后立即开启下一步任务</div>}
           <StepTitle title="额外要求" step="2"></StepTitle>
           <Form.Item label="是否需要额外要求" className="flexr">
             <Form.Item name="extReq">
               <Radio.Group>
-                <Radio value={0}>额外要求</Radio>
-                <Radio value={1}>无额外要求</Radio>
+                <Radio value={1}>额外要求</Radio>
+                <Radio value={0}>无额外要求</Radio>
               </Radio.Group>
             </Form.Item>
             <span className="redTxt mr10">+0元</span>
             选择额外要求，需写明额外要求的内容，需要买手截取什么图片等
           </Form.Item>
-          {extReq === 0 && (
+          {extReq === 1 && (
             <Form.Item label="审核方式" className="flexr">
               <Form.Item name="extReqReview">
                 <Radio.Group>
-                  <Radio value={1}>审核商品</Radio>
+                  <Radio value={0}>系统审核</Radio>
+                  <Radio value={1}>商家审核</Radio>
                 </Radio.Group>
               </Form.Item>
               用户提交下单需由商户审核，审核请勿拖延时间过长，以免引起用户投诉
             </Form.Item>
           )}
 
-          {extReq === 0 && (
+          {extReq === 1 && (
             <Form.Item label="截图" className="flexr">
               <Form.Item name="extReqScreenShot">
                 <Radio.Group>
-                  <Radio value={0}>需要截图</Radio>
-                  <Radio value={1}>无需截图</Radio>
+                  <Radio value={1}>需要截图</Radio>
+                  <Radio value={0}>无需截图</Radio>
                 </Radio.Group>
               </Form.Item>
               <div>
@@ -131,12 +136,12 @@ class TaskStep extends Component {
               </div>
             </Form.Item>
           )}
-          {extReq === 0 && (
+          {extReq === 1 && (
             <Form.Item label="店家要求">
               <Editor store={store} noTitle={true} />
             </Form.Item>
           )}
-          {extReq === 0 && <div className="explain">额外要求后立即开启下一步任务</div>}
+          {extReq === 1 && <div className="explain">额外要求后立即开启下一步任务</div>}
 
           <StepTitle
             title="加购物车"
@@ -146,30 +151,30 @@ class TaskStep extends Component {
           <Form.Item label="是否需要加购物车" className="flexr">
             <Form.Item name="joinCart">
               <Radio.Group>
-                <Radio value={0}>加购物车</Radio>
-                <Radio value={1}>不加购物车</Radio>
+                <Radio value={1}>加购物车</Radio>
+                <Radio value={0}>不加购物车</Radio>
               </Radio.Group>
             </Form.Item>
             <span className="redTxt mr10">+0元</span>
             选择加购，则买手在执行该任务时需要将商品添加购物车
           </Form.Item>
-          {joinCart === 0 && (
+          {joinCart === 1 && (
             <Form.Item label="审核方式" className="flexr">
               <Form.Item name="joinCartReview">
                 <Radio.Group>
-                  <Radio value={1}>审核商品</Radio>
+                  <Radio value={0}>系统审核</Radio>
                 </Radio.Group>
               </Form.Item>
               用户提交下单需由商户审核，审核请勿拖延时间过长，以免引起用户投诉
             </Form.Item>
           )}
 
-          {joinCart === 0 && (
+          {joinCart === 1 && (
             <Form.Item label="截图" className="flexr">
               <Form.Item name="joinCartScreenShot">
                 <Radio.Group>
-                  <Radio value={0}>需要截图</Radio>
-                  <Radio value={1}>无需截图</Radio>
+                  <Radio value={1}>需要截图</Radio>
+                  <Radio value={0}>无需截图</Radio>
                 </Radio.Group>
               </Form.Item>
               <div>
@@ -177,18 +182,18 @@ class TaskStep extends Component {
               </div>
             </Form.Item>
           )}
-          {joinCart === 0 && (
+          {joinCart === 1 && (
             <Form.Item label="店家要求">
               <Editor store={store} noTitle={true} />
             </Form.Item>
           )}
-          {joinCart === 0 && <div className="explain">加购物车后立即开启下一步任务</div>}
+          {joinCart === 1 && <div className="explain">加购物车后立即开启下一步任务</div>}
 
           <StepTitle title="下单" step="4"></StepTitle>
           <Form.Item label="审核方式" className="flexr">
             <Form.Item name="confirmOrder">
               <Radio.Group>
-                <Radio value={0}>商户审核</Radio>
+                <Radio value={1}>商户审核</Radio>
               </Radio.Group>
             </Form.Item>
             <span className="redTxt mr10">+0元</span>
@@ -197,8 +202,8 @@ class TaskStep extends Component {
           <Form.Item label="截图" className="flexr">
             <Form.Item name="confirmOrderScreenShot">
               <Radio.Group>
-                <Radio value={0}>需要截图</Radio>
-                <Radio value={1}>无需截图</Radio>
+                <Radio value={1}>需要截图</Radio>
+                <Radio value={0}>无需截图</Radio>
               </Radio.Group>
             </Form.Item>
             <div>

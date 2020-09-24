@@ -1,8 +1,13 @@
 // 框架
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { Row, Col, Select, Upload } from 'antd';
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { Row, Col, Select, Upload, Input, InputNumber } from 'antd';
+import {
+  PlusCircleOutlined,
+  MinusCircleOutlined,
+  LoadingOutlined,
+  PlusOutlined,
+} from '@ant-design/icons';
 import { toJS, action } from 'mobx';
 import shortid from 'shortid';
 import { PageTitle, CardTitle } from '@comp/TitleRow';
@@ -29,7 +34,7 @@ class TaskReq extends Component {
   render() {
     const {
       store,
-      store: { nextStep, prevStep, onAddProduct },
+      store: { keywordNumList, onAddKeyWord, onDeleteKeyWord, onKeywordChange },
     } = this.props;
     const uploadButton = (
       <div>
@@ -44,7 +49,7 @@ class TaskReq extends Component {
         <Row align="middle" className="mb20">
           <Col span="4">设置类型：</Col>
           <Col span="4">
-            <Select style={{ minWidth: 200 }} onChange={this.handleChange}>
+            <Select style={{ minWidth: 200 }} defaultValue={0} onChange={this.handleChange}>
               <Option value={0}>关键词</Option>
               <Option value={1}>商品口令</Option>
               <Option value={2}>二维码</Option>
@@ -57,7 +62,46 @@ class TaskReq extends Component {
             <UploadOSS />
           </Col>
         </Row>
-        <Editor store={store} />
+        <Row align="middle">
+          <Col span="4">关键词：</Col>
+          <Col>
+            {keywordNumList.map(({ keyword, num }, i) => {
+              return (
+                <Row
+                  key={i}
+                  gutter={1}
+                  align="center"
+                  justify="center"
+                  className="mt10"
+                  style={{ lineHeight: '32px' }}
+                >
+                  <Col>
+                    <Input
+                      value={keyword}
+                      onChange={onKeywordChange.bind(this, 'keyword', i)}
+                      placeholder="请输入关键词"
+                    />
+                  </Col>
+                  <Col>
+                    <Input
+                      value={num}
+                      onChange={onKeywordChange.bind(this, 'num', i)}
+                      placeholder="请输入"
+                    />
+                  </Col>
+                  <Col>单</Col>
+                  <Col className="ml10">
+                    <PlusCircleOutlined onClick={onAddKeyWord.bind(this, i)} className="mr10" />
+                    {keywordNumList.length > 1 && (
+                      <MinusCircleOutlined onClick={onDeleteKeyWord.bind(this, i)} />
+                    )}
+                  </Col>
+                </Row>
+              );
+            })}
+          </Col>
+        </Row>
+        <Editor onBlur={store.onEditorBlur.bind(this, 'sellerRequest')} store={store} />
       </div>
     );
   }

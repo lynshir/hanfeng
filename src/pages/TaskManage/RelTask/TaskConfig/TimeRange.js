@@ -58,13 +58,13 @@ class TimeRange extends Component {
     const {
       setTimeRangeRef,
       onTimeRangeFieldsChange,
-      timeRange: { allot, releaseNum },
+      timeRange: { splitType, taskNum },
       avgDateSetMap,
       manualDateSetMap,
       onDateSetChange,
       totalOrders,
     } = this.props.store;
-    const dateSetMap = allot === 0 ? avgDateSetMap : allot === 1 ? manualDateSetMap : {};
+    const dateSetMap = splitType === 0 ? avgDateSetMap : splitType === 1 ? manualDateSetMap : {};
     return (
       <div className="timeRange mt20">
         <CardTitle title="时间范围" />
@@ -72,10 +72,10 @@ class TimeRange extends Component {
           {...formItemLayout}
           ref={setTimeRangeRef}
           name="control-ref"
-          initialValues={{ allot: 0 }}
+          initialValues={{ splitType: 0 }}
           onFieldsChange={onTimeRangeFieldsChange}
         >
-          <Form.Item name="allot" label="分配类型">
+          <Form.Item name="splitType" label="分配类型">
             <Radio.Group buttonStyle="solid">
               <Radio.Button value={0}>平均分配</Radio.Button>
               <Radio.Button value={1}>手动分配</Radio.Button>
@@ -83,7 +83,7 @@ class TimeRange extends Component {
             </Radio.Group>
           </Form.Item>
 
-          {allot === 0 && (
+          {splitType === 0 && (
             <Form.Item name="timeRangeAvg" label="日期范围">
               <RangePicker
                 showTime={{
@@ -92,7 +92,7 @@ class TimeRange extends Component {
               />
             </Form.Item>
           )}
-          {allot === 1 && (
+          {splitType === 1 && (
             <Form.Item label="日期范围">
               <Form.Item name="timeRangeManual" noStyle>
                 <RangePicker
@@ -104,18 +104,18 @@ class TimeRange extends Component {
               <span>最多可设置4天内</span>
             </Form.Item>
           )}
-          {allot === 2 && (
+          {splitType === 2 && (
             <Form.Item name="startTime" label="开始时间">
               <DatePicker showTime />
             </Form.Item>
           )}
           <Form.Item label="发布数量">
-            <Form.Item name="releaseNum" noStyle>
+            <Form.Item name="taskNum" noStyle>
               <InputNumber placeholder="请输入发布数量" min={0} />
             </Form.Item>
             <span className="ml10">件</span>
           </Form.Item>
-          <Form.Item name="timeEnd" label="终止时间">
+          <Form.Item name="finishTime" label="终止时间">
             <DatePicker
               format="YYYY-MM-DD HH:mm:ss"
               disabledDate={disabledTodayBefore}
@@ -141,7 +141,7 @@ class TimeRange extends Component {
                           <Input
                             addonBefore={hour}
                             value={number}
-                            disabled={allot === 0}
+                            disabled={splitType === 0}
                             onChange={onDateSetChange.bind(this, v, hour)}
                           />
                         </Col>
@@ -154,7 +154,7 @@ class TimeRange extends Component {
           })}
         </div>
         <div>
-          计划总单数：<span className="redTxt">{releaseNum || 0}</span>单，已分配总计：
+          计划总单数：<span className="redTxt">{taskNum || 0}</span>单，已分配总计：
           <span className="redTxt">{totalOrders}单</span>
         </div>
       </div>

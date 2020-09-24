@@ -7,13 +7,17 @@
   .pannel {
     width: 100%;
     border: 1px solid rgb(240, 238, 238);
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .06);
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.06);
     padding: 20px;
     margin-bottom: 20px;
   }
 
   .userInfo {
     flex: 1;
+  }
+  .avatar {
+    width: 50px;
+    height: 50px;
   }
 
   .wxWrap {
@@ -50,5 +54,4 @@
   .mt30 {
     margin-bottom: 30px;
   }
-
 }

@@ -14,95 +14,105 @@ import Dashboard from './pages/Dashboard';
 import TaskManageRouter from './pages/TaskManage/index';
 import FinanceRouter from './pages/Finance/index';
 import AccountRouter from './pages/Account/index';
+import Login from './pages/Login/Login';
+import Register from './pages/Login/Register';
 
 const { Header, Sider, Content } = Layout;
 const { SubMenu } = Menu;
 
-function App() {
+function Main() {
   const [collapsed, onCollapse] = useState(false);
   let pathname = window.location.pathname.replace('/member-center/', '');
   pathname = pathname === '/' || pathname === '/member-center' ? '' : pathname;
   return (
-    <Router>
-      <Layout style={{ height: '100vh', overflow: 'hidden' }}>
-        <Header className="header">
-          <div className="clf">测试店铺名称</div>
-        </Header>
-        <Layout>
-          <Sider
+    <Layout style={{ height: '100vh', overflow: 'hidden' }}>
+      <Header className="header">
+        <div className="clf">测试店铺名称</div>
+      </Header>
+      <Layout>
+        <Sider
+          theme="light"
+          collapsible
+          collapsed={collapsed}
+          onCollapse={() => {
+            onCollapse(!collapsed);
+          }}
+          style={{ maxHeight: '100vh', overflow: 'hidden' }}
+        >
+          <Menu
             theme="light"
-            collapsible
-            collapsed={collapsed}
-            onCollapse={() => {
-              onCollapse(!collapsed);
-            }}
-            style={{ maxHeight: '100vh', overflow: 'hidden' }}
+            defaultOpenKeys={['accountManage']}
+            defaultSelectedKeys={[pathname || 'dashboard']}
+            mode="inline"
           >
-            <Menu
-              theme="light"
-              defaultOpenKeys={['accountManage']}
-              defaultSelectedKeys={[pathname || 'dashboard']}
-              mode="inline"
-            >
-              <Menu.Item key="dashboard" icon={<DashboardOutlined />}>
-                <NavLink to="/member-center/dashboard">Dashboard</NavLink>
+            <Menu.Item key="dashboard" icon={<DashboardOutlined />}>
+              <NavLink to="/member-center/dashboard">Dashboard</NavLink>
+            </Menu.Item>
+            <SubMenu key="taskManage" icon={<ContainerOutlined />} title="任务管理">
+              <Menu.Item key="relTask">
+                <NavLink to="/member-center/relTask">发布任务</NavLink>
               </Menu.Item>
-              <SubMenu key="taskManage" icon={<ContainerOutlined />} title="任务管理">
-                <Menu.Item key="relTask">
-                  <NavLink to="/member-center/relTask">发布任务</NavLink>
-                </Menu.Item>
-                <Menu.Item key="taskList">
-                  <NavLink to="/member-center/taskList">任务列表</NavLink>
-                </Menu.Item>
-                <Menu.Item key="taskReview">
-                  <NavLink to="/member-center/taskReview">任务审核</NavLink>
-                </Menu.Item>
-                <Menu.Item key="commentTask">
-                  <NavLink to="/member-center/commentTask">评论任务</NavLink>
-                </Menu.Item>
-              </SubMenu>
-              <SubMenu key="finance" icon={<ContainerOutlined />} title="财务管理">
-                <Menu.Item key="recharge">
-                  <NavLink to="/member-center/recharge">充值</NavLink>
-                </Menu.Item>
-                <Menu.Item key="withdraw">
-                  <NavLink to="/member-center/withdraw">提现</NavLink>
-                </Menu.Item>
-                <Menu.Item key="fd">
-                  <NavLink to="/member-center/fundingDetail">资金明细</NavLink>
-                </Menu.Item>
-              </SubMenu>
-              <SubMenu key="accountManage" icon={<ContainerOutlined />} title="账户管理">
-                <Menu.Item key="shop">
-                  <NavLink to="/member-center/shop">店铺管理</NavLink>
-                </Menu.Item>
-                <Menu.Item key="account">
-                  <NavLink to="/member-center/accountNo">账号管理</NavLink>
-                </Menu.Item>
-                <Menu.Item key="workOrder">
-                  <NavLink to="/member-center/workOrder">客服订单</NavLink>
-                </Menu.Item>
-              </SubMenu>
-            </Menu>
-          </Sider>
-          <Layout className="content-wrapper">
-            <Content>
-              <Route exact path="/" component={Dashboard} />
-              <Route exact path="/member-center/dashboard" component={Dashboard} />
-              <Switch>
-                {/* <Route exact path='/' component={ProductDetail}></Route> */}
-                <TaskManageRouter />
-              </Switch>
-              <Switch>
-                <FinanceRouter />
-              </Switch>
-              <Switch>
-                <AccountRouter />
-              </Switch>
-            </Content>
-          </Layout>
+              <Menu.Item key="taskList">
+                <NavLink to="/member-center/taskList">任务列表</NavLink>
+              </Menu.Item>
+              <Menu.Item key="taskReview">
+                <NavLink to="/member-center/taskReview">任务审核</NavLink>
+              </Menu.Item>
+              <Menu.Item key="commentTask">
+                <NavLink to="/member-center/commentTask">评论任务</NavLink>
+              </Menu.Item>
+            </SubMenu>
+            <SubMenu key="finance" icon={<ContainerOutlined />} title="财务管理">
+              <Menu.Item key="recharge">
+                <NavLink to="/member-center/recharge">充值</NavLink>
+              </Menu.Item>
+              <Menu.Item key="withdraw">
+                <NavLink to="/member-center/withdraw">提现</NavLink>
+              </Menu.Item>
+              <Menu.Item key="fd">
+                <NavLink to="/member-center/fundingDetail">资金明细</NavLink>
+              </Menu.Item>
+            </SubMenu>
+            <SubMenu key="accountManage" icon={<ContainerOutlined />} title="账户管理">
+              <Menu.Item key="shop">
+                <NavLink to="/member-center/shop">店铺管理</NavLink>
+              </Menu.Item>
+              <Menu.Item key="account">
+                <NavLink to="/member-center/accountNo">账号管理</NavLink>
+              </Menu.Item>
+              <Menu.Item key="workOrder">
+                <NavLink to="/member-center/workOrder">客服订单</NavLink>
+              </Menu.Item>
+            </SubMenu>
+          </Menu>
+        </Sider>
+        <Layout className="content-wrapper">
+          <Content>
+            <Route exact path="/" component={Dashboard} />
+            <Route exact path="/member-center/dashboard" component={Dashboard} />
+            <Switch>
+              {/* <Route exact path='/' component={ProductDetail}></Route> */}
+              <TaskManageRouter />
+            </Switch>
+            <Switch>
+              <FinanceRouter />
+            </Switch>
+            <Switch>
+              <AccountRouter />
+            </Switch>
+          </Content>
         </Layout>
       </Layout>
+    </Layout>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Route path="/member-login" component={Login} />
+      <Route path="/member-register" component={Register} />
+      <Route path="/member-center" component={Main} />
     </Router>
   );
 }

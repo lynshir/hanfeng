@@ -21,7 +21,6 @@ function CardTitle({ title, ...rest }) {
 }
 
 function StepTitle({ step, title, extra }) {
-  console.log(extra, 'extraextra');
   return (
     <div className="stepTit">
       <span className="stepNum">{step}</span>

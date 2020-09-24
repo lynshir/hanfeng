@@ -4,9 +4,9 @@
  * 参考文档 (https://github.com/chimurai/http-proxy-middleware）
  */
 const proxy = require('http-proxy-middleware');
-const target = 'https://dap103.runscm.com';
+const target = 'http://192.168.0.41:11121';
 // const target = 'http://172.16.22.251:80';
-const context = ['/api', '/sku', '/employee', '/category', '/baseSerializeSchema', '/brand', '/base', '/shop', '/warehouse', '/courier', '/city', '/district', '/province', '/organization', '/oms'];
+const context = ['/loginVerify', '/user', '/product', '/cate'];
 module.exports = function (app) {
   context.forEach((pathPrefix) => {
     app.use(
@@ -14,7 +14,7 @@ module.exports = function (app) {
         changeOrigin: true,
         target,
         secure: false,
-      })
+      }),
     );
   });
 };

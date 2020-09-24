@@ -18,6 +18,7 @@ export default class TaskListModel {
       plaformDic: [
         { code: 1, name: '淘宝' },
         { code: 2, name: '京东' },
+        { code: 3, name: '拼多多' },
       ],
       shopDic: [
         { code: 1, name: '淘宝' },

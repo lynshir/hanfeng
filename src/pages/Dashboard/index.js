@@ -6,20 +6,22 @@ import { toJS } from 'mobx';
 
 import './index.scss';
 import Store from './store';
-
+import head from '@assets/img/head.jpg';
 const { TabPane } = Tabs;
 let store = null;
 
 const UserInfo = observer(function UserInfo() {
+  const {
+    userInfo: { username, tenantId },
+  } = store;
   return (
     <div className="pannel flex">
       <div className="userInfo">
         <div className="flex infoRow f24">
           <Space>
-            <span>头像</span>
-            <span>小七旗舰店</span>
-            <span>ID</span>
-            <span>user</span>
+            <img className="avatar" alt="" src={head} />
+            <span>{username}</span>
+            <span>{tenantId}</span>
           </Space>
         </div>
         <div className="flex totalWrap">
@@ -106,18 +108,20 @@ const PriceTable = observer(function PriceTable({ store: { columns, dataSource }
 @observer
 class RelTask extends Component {
   constructor(props) {
-    super(props);
+    super();
     if (!store) store = new Store();
   }
 
   componentDidMount() {
     // store.getCategory();
+    store.getUser();
   }
 
   render() {
-    const { columns, dataSource } = store;
+    const { getInvit, dataSource } = store;
     return (
       <div className="container">
+        <Button onClick={getInvit}>获取邀请码</Button>
         <UserInfo store={store} />
         <Notifiy store={store} />
         <Review store={store} />
