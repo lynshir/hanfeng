@@ -6,11 +6,8 @@ import _ from 'lodash';
 export default class Store {
   constructor(options) {
     extendObservable(this, {
-      dataSource: [
-        { jgqj: '00-100', price: '100.00' },
-        { jgqj: '00-100', price: '100.00' },
-        { jgqj: '00-100', price: '100.00' },
-      ],
+      dataSource: [],
+      priceData: [],
       userInfo: {},
       ...(options || {}),
     });
@@ -19,14 +16,26 @@ export default class Store {
   columns = [
     {
       title: '商品价格区间',
-      dataIndex: 'jgqj',
-      key: 'jgqj',
+      dataIndex: 'price',
+      key: 'price',
       align: 'center',
     },
     {
       title: '价格',
-      dataIndex: 'price',
-      key: 'price',
+      dataIndex: 'servicePrice',
+      key: 'servicePrice',
+      align: 'center',
+    },
+    {
+      title: '商品价格区间',
+      dataIndex: 'price1',
+      key: 'price1',
+      align: 'center',
+    },
+    {
+      title: '价格',
+      dataIndex: 'servicePrice1',
+      key: 'servicePrice1',
       align: 'center',
     },
   ];
@@ -37,6 +46,28 @@ export default class Store {
       if (v.status === 'Successful') {
         if (_.isObject(v.data)) {
           this.userInfo = v.data;
+        }
+      }
+    });
+  };
+
+  @action
+  getPrice = () => {
+    commonGet('/itemPrice/get').then((v) => {
+      if (v.status === 'Successful') {
+        if (_.isObject(v.data)) {
+          let arr = v.data;
+          this.priceData = _.cloneDeep(arr);
+          let len = arr.length;
+          let index = Math.ceil(len / 2);
+          let arrFront = arr.slice(0, index);
+          let arrBack = arr.slice(index);
+          arrBack.forEach((el, i) => {
+            arrFront[i].price1 = el.price;
+            arrFront[i].servicePrice1 = el.servicePrice;
+          });
+          console.log(arrFront, 'arrFront');
+          this.dataSource = arrFront;
         }
       }
     });

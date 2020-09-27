@@ -23,10 +23,19 @@ function PlatImg({ type }) {
 class BaseConfig extends Component {
   componentDidMount() {
     // store.getCategory();
+    this.props.store.getShopDic();
   }
 
   render() {
-    const { platType, changePlat, onGenderChange, genderType, nextStep } = this.props.store;
+    const {
+      platType,
+      changePlat,
+      onGenderChange,
+      shopDic,
+      shopChange,
+      genderType,
+      nextStep,
+    } = this.props.store;
     return (
       <div className="baseConfig">
         <CardTitle title="平台选择" />
@@ -57,8 +66,14 @@ class BaseConfig extends Component {
         <div className="flex flex-lc mt20 mb20">
           <span className="redTxt">*</span>
           <span>选择店铺：</span>
-          <Select style={{ width: 200 }} defaultValue="jack">
-            <Option value="jack">Jack</Option>
+          <Select style={{ width: 200 }} onChange={shopChange}>
+            {shopDic.map((v) => {
+              return (
+                <Option key={v.id} value={v.id}>
+                  {v.shopName}
+                </Option>
+              );
+            })}
           </Select>
         </div>
         <CardTitle title="分配接单配置" />

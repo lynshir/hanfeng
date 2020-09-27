@@ -1,7 +1,19 @@
 // 框架
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { Row, Col, Select, Button, Space, Input, Radio, Form, InputNumber, Divider } from 'antd';
+import {
+  Row,
+  Col,
+  Select,
+  Button,
+  Space,
+  Input,
+  Radio,
+  Form,
+  InputNumber,
+  Divider,
+  Cascader,
+} from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { toJS } from 'mobx';
 import shortid from 'shortid';
@@ -18,10 +30,27 @@ const formItemLayout = {
   wrapperCol: { span: 14 },
 };
 
+let a = {
+  address: '上海',
+  itemId: '624599325289', //商品id
+  payNum: '3',
+  pic: '//img.alicdn.com/imgextra/i1/2207293755222/O1CN01N3bwTT1oRis8vLzgv_!!0-item_pic.jpg',
+  price: '3599',
+  sellerNick: 'bape官方旗舰店', //掌柜昵称
+  shopName: 'BAPE官方旗舰店', //店铺昵称
+  title: 'BAPE男装秋冬鲨鱼WGM字母图案数码迷彩连帽拉链长袖卫衣115005F', //商品标题
+};
 @observer
 class Product extends Component {
   render() {
-    const { productList, onDeleteProduct, onFormItemChange } = this.props.store;
+    const {
+      productList,
+      // productSaveList,
+      onDeleteProduct,
+      onFormItemChange,
+      getProductInfo,
+    } = this.props.store;
+    // const { itemId, pic, sellerNick, shopName, title } = a;
     return (
       <Form.Provider
         onFormChange={(name, { changedFields, forms }) => {
@@ -39,14 +68,19 @@ class Product extends Component {
         {productList.map((v, i) => {
           const {
             nameOrder,
-            link,
-            bought,
-            unit,
+            itemUrl,
+            num,
+            price,
             address,
             payNum,
             priceRange,
-            priceMin,
-            priceMax,
+            minPrice,
+            maxPrice,
+            itemId,
+            pic,
+            sellerNick,
+            shopName,
+            title,
           } = v;
           return (
             <Form
@@ -55,14 +89,14 @@ class Product extends Component {
               className="productList"
               initialValues={{
                 nameOrder,
-                link,
-                bought,
-                unit,
+                itemUrl,
+                num,
+                price,
                 address,
                 payNum,
                 priceRange,
-                priceMin,
-                priceMax,
+                minPrice,
+                maxPrice,
               }}
               key={shortid.generate()}
               // {...layout}
@@ -82,17 +116,32 @@ class Product extends Component {
               <Form.Item label={<span className="mustTit">商品链接</span>} className="rowItem">
                 <Form.Item
                   // className="w500"
-                  name="link"
+                  name="itemUrl"
                   rules={[{ required: true, message: '请输入商品链接!' }]}
                   noStyle
                 >
                   <Input placeholder="请输入商品链接" />
                 </Form.Item>
-                <Button type="primary">获取商品链接</Button>
+                <Button type="primary" onClick={getProductInfo.bind(this, i)}>
+                  获取商品链接
+                </Button>
               </Form.Item>
+              {itemId && (
+                <div className="pannel proLinkPannel">
+                  <div>
+                    <img alt="img" src={`https:${pic}`} className="wh100" />
+                  </div>
+                  <div className="f16 proLinkInfo">
+                    <div>{title}</div>
+                    <div>商品ID：{itemId}</div>
+                    <div>店铺名称：{sellerNick}</div>
+                    <div>掌柜昵称：{shopName}</div>
+                  </div>
+                </div>
+              )}
               <Form.Item label={<span className="mustTit">拍下件数</span>}>
                 <Form.Item
-                  name="bought"
+                  name="num"
                   rules={[{ required: true, message: '请输入拍下件数!' }]}
                   noStyle
                 >
@@ -102,7 +151,7 @@ class Product extends Component {
               </Form.Item>
               <Form.Item label={<span className="mustTit">商品单价</span>}>
                 <Form.Item
-                  name="unit"
+                  name="price"
                   rules={[{ required: true, message: '请输入商品单价!' }]}
                   noStyle
                 >
@@ -128,11 +177,11 @@ class Product extends Component {
               </Form.Item>
               {/* 数字赋值类型number */}
               <Form.Item label="价格区间">
-                <Form.Item className="priceRange rowItem w500" name="priceMin" noStyle>
+                <Form.Item className="priceRange rowItem w500" name="minPrice" noStyle>
                   <InputNumber min={0} placeholder="请输入" />
                 </Form.Item>
                 <span className="ml10 mr10">-</span>
-                <Form.Item colon={false} label=" " name="priceMax" noStyle>
+                <Form.Item colon={false} label=" " name="maxPrice" noStyle>
                   <InputNumber min={0} placeholder="请输入" />
                 </Form.Item>
               </Form.Item>
@@ -148,12 +197,24 @@ class Product extends Component {
 class TaskConfig extends Component {
   componentDidMount() {
     // store.getCategory();
+    const {
+      store: { getCategory },
+    } = this.props;
+    getCategory();
   }
 
   render() {
     const {
       store,
-      store: { nextStep, prevStep, onAddProduct },
+      store: {
+        nextStep,
+        prevStep,
+        onAddProduct,
+        proCategory,
+        onInputChange,
+        proItemOptions,
+        proItemChange,
+      },
     } = this.props;
     return (
       <div className="baseConfig">
@@ -162,13 +223,18 @@ class TaskConfig extends Component {
           <Row align="middle" className="w300">
             <Col span={8}>任务名称</Col>
             <Col span={16}>
-              <Input placeholder="请输入任务名称" />
+              <Input placeholder="请输入任务名称" onChange={onInputChange.bind(this, 'taskName')} />
             </Col>
           </Row>
           <Row align="middle" className="w300 mt20">
             <Col span={8}>商品类目</Col>
             <Col span={16}>
-              <Radio.Group defaultValue="a" buttonStyle="solid">
+              <Radio.Group
+                defaultValue="a"
+                buttonStyle="solid"
+                value={proCategory}
+                onChange={onInputChange.bind(this, 'proCategory')}
+              >
                 <Radio.Button value="a" className="w100">
                   选择分类
                 </Radio.Button>
@@ -178,12 +244,24 @@ class TaskConfig extends Component {
               </Radio.Group>
             </Col>
           </Row>
-          <Row align="middle" className="w300 mt10">
-            <Col span={8}></Col>
-            <Col span={16}>
-              <Input placeholder="请输入任务名称" />
-            </Col>
-          </Row>
+          {proCategory === 'a' ? (
+            <Row align="middle" className="w300 mt10">
+              <Col span={8}></Col>
+              <Col span={16}>
+                <Cascader
+                  style={{ width: 300 }}
+                  options={proItemOptions}
+                  onChange={proItemChange}
+                  showSearch={(inputValue, path) => {
+                    return path.some(
+                      (option) => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1,
+                    );
+                  }}
+                  placeholder="请选择或搜索类目"
+                />
+              </Col>
+            </Row>
+          ) : null}
         </div>
         <CardTitle title="商品信息" />
         <Product store={store} />

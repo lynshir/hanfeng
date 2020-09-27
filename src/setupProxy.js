@@ -6,7 +6,7 @@
 const proxy = require('http-proxy-middleware');
 const target = 'http://192.168.0.41:11121';
 // const target = 'http://172.16.22.251:80';
-const context = ['/loginVerify', '/user', '/product', '/cate'];
+const context = ['/loginVerify', '/user', '/product', '/cate', '/shop', '/taskOrder', '/itemPrice'];
 module.exports = function (app) {
   context.forEach((pathPrefix) => {
     app.use(

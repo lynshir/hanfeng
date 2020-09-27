@@ -52,9 +52,9 @@ const Notifiy = observer(function Notifiy() {
   return (
     <div className="pannel flexc">
       <div className="f18 f600">系统公告</div>
-      {[1, 2, 3].map((v) => {
+      {[1, 2, 3].map((v, i) => {
         return (
-          <div className="flex notiWrap f18">
+          <div className="flex notiWrap f18" key={i}>
             <div>
               <span className="circle"></span>
               <span>商家请加官方客服微信账号：xxxxxx</span>
@@ -115,6 +115,7 @@ class RelTask extends Component {
   componentDidMount() {
     // store.getCategory();
     store.getUser();
+    store.getPrice();
   }
 
   render() {

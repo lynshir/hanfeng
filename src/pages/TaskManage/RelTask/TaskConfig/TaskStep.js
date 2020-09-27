@@ -50,15 +50,16 @@ class TaskStep extends Component {
           initialValues={{
             collect: 0,
             collectReview: 0,
-            collectScreenShot: 0,
+            collectScreenShot: false,
             extReq: 0,
             extReqReview: 1,
-            extReqScreenShot: 0,
+            extReqScreenShot: false,
             joinCart: 0,
             joinCartReview: 0,
-            joinCartScreenShot: 0,
-            confirmOrderScreenShot: 0,
+            joinCartScreenShot: false,
+            confirmOrderScreenShot: false,
             confirmOrder: 1,
+            confirmFare: false,
           }}
           {...formItemLayout}
           ref={setTaskStepRef}
@@ -90,8 +91,8 @@ class TaskStep extends Component {
             <Form.Item label="截图" className="flexr">
               <Form.Item name="collectScreenShot">
                 <Radio.Group>
-                  <Radio value={1}>需要截图</Radio>
-                  <Radio value={0}>无需截图</Radio>
+                  <Radio value={true}>需要截图</Radio>
+                  <Radio value={false}>无需截图</Radio>
                 </Radio.Group>
               </Form.Item>
               <div>
@@ -127,8 +128,8 @@ class TaskStep extends Component {
             <Form.Item label="截图" className="flexr">
               <Form.Item name="extReqScreenShot">
                 <Radio.Group>
-                  <Radio value={1}>需要截图</Radio>
-                  <Radio value={0}>无需截图</Radio>
+                  <Radio value={true}>需要截图</Radio>
+                  <Radio value={false}>无需截图</Radio>
                 </Radio.Group>
               </Form.Item>
               <div>
@@ -138,7 +139,12 @@ class TaskStep extends Component {
           )}
           {extReq === 1 && (
             <Form.Item label="店家要求">
-              <Editor store={store} noTitle={true} />
+              <Editor
+                onBlur={store.onEditorBlur.bind(this, 'extraRq')}
+                store={store}
+                placeholder="请输入具体步骤要求"
+                noTitle={true}
+              />
             </Form.Item>
           )}
           {extReq === 1 && <div className="explain">额外要求后立即开启下一步任务</div>}
@@ -173,18 +179,13 @@ class TaskStep extends Component {
             <Form.Item label="截图" className="flexr">
               <Form.Item name="joinCartScreenShot">
                 <Radio.Group>
-                  <Radio value={1}>需要截图</Radio>
-                  <Radio value={0}>无需截图</Radio>
+                  <Radio value={true}>需要截图</Radio>
+                  <Radio value={false}>无需截图</Radio>
                 </Radio.Group>
               </Form.Item>
               <div>
                 选择需要截图，则买手会将图片上传后审核，建议不要大批量的发布需要截图的任务，会触发风控
               </div>
-            </Form.Item>
-          )}
-          {joinCart === 1 && (
-            <Form.Item label="店家要求">
-              <Editor store={store} noTitle={true} />
             </Form.Item>
           )}
           {joinCart === 1 && <div className="explain">加购物车后立即开启下一步任务</div>}
@@ -202,8 +203,8 @@ class TaskStep extends Component {
           <Form.Item label="截图" className="flexr">
             <Form.Item name="confirmOrderScreenShot">
               <Radio.Group>
-                <Radio value={1}>需要截图</Radio>
-                <Radio value={0}>无需截图</Radio>
+                <Radio value={true}>需要截图</Radio>
+                <Radio value={false}>无需截图</Radio>
               </Radio.Group>
             </Form.Item>
             <div>
@@ -214,10 +215,10 @@ class TaskStep extends Component {
             <Form.Item name="confirmSupport">
               <Checkbox.Group
                 options={[
-                  { label: '信用卡付款', value: 'creditCard' },
-                  { label: '花呗', value: 'huabei' },
-                  { label: '淘金币', value: 'taojinbi' },
-                  { label: '优惠券', value: 'coupon' },
+                  { label: '信用卡付款', value: 1 },
+                  { label: '花呗', value: 2 },
+                  { label: '淘金币', value: 3 },
+                  { label: '优惠券', value: 4 },
                 ]}
               />
             </Form.Item>
@@ -229,8 +230,8 @@ class TaskStep extends Component {
             rules={[{ required: true, message: '请选择运费!' }]}
           >
             <Select style={{ width: 220 }}>
-              <Option value="free">包邮</Option>
-              <Option value="advance">垫付</Option>
+              <Option value={true}>包邮</Option>
+              <Option value={false}>垫付</Option>
             </Select>
           </Form.Item>
         </Form>

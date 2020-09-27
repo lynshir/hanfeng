@@ -164,7 +164,8 @@ class Editor extends React.Component {
 
   render() {
     const { handleEditorChange, clearContent, showImgUpload, onBlur } = this,
-      { noTitle, editorState } = this.state;
+      { noTitle, editorState } = this.state,
+      { placeholder } = this.props;
     const excludeControls = ['media']; //排除的组件
     const extendControls = [
       {
@@ -213,7 +214,10 @@ class Editor extends React.Component {
               // onSave={submitContent} 在编辑器获得焦点时按下ctrl+s会执行此方法,编辑器内容提交到服务端之前，可直接调用editorState.toHTML()来获取HTML格式的内容
               excludeControls={excludeControls} //排除的组件
               extendControls={extendControls} //额外的扩展
-              placeholder="请输入具体步骤要求，如：1、根据关键词搜索浏览多个商品后找到本商品 2、浏览其他商品的详情页面3、浏览本商品详情页面2-5分钟 4、收藏和加购任务请分开做 5、下单后不要立刻确认收货，等待货物到达后确认"
+              placeholder={
+                placeholder ||
+                '请输入具体步骤要求，如：1、根据关键词搜索浏览多个商品后找到本商品 2、浏览其他商品的详情页面3、浏览本商品详情页面2-5分钟 4、收藏和加购任务请分开做 5、下单后不要立刻确认收货，等待货物到达后确认'
+              }
             />
           </Col>
         </Row>

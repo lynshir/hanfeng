@@ -10,6 +10,7 @@ import Store from './store';
 
 import BaseConfig from './BaseConfig';
 import TaskConfig from './TaskConfig/TaskConfig';
+import ConfirmPay from './ConfirmPay';
 
 const { Step } = Steps;
 
@@ -24,6 +25,7 @@ class RelTask extends Component {
 
   componentDidMount() {
     // store.getCategory();
+    store.getPrice();
   }
 
   render() {
@@ -43,6 +45,7 @@ class RelTask extends Component {
         </div>
         {curStep === 0 && <BaseConfig store={store} />}
         {curStep === 1 && <TaskConfig store={store} />}
+        {curStep === 2 && <ConfirmPay store={store} />}
       </div>
     );
   }

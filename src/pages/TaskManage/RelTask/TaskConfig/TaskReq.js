@@ -34,7 +34,14 @@ class TaskReq extends Component {
   render() {
     const {
       store,
-      store: { keywordNumList, onAddKeyWord, onDeleteKeyWord, onKeywordChange },
+      store: {
+        keywordNumList,
+        onAddKeyWord,
+        onDeleteKeyWord,
+        onKeywordChange,
+        taskRequestType,
+        handleChangeTaskRq,
+      },
     } = this.props;
     const uploadButton = (
       <div>
@@ -49,7 +56,12 @@ class TaskReq extends Component {
         <Row align="middle" className="mb20">
           <Col span="4">设置类型：</Col>
           <Col span="4">
-            <Select style={{ minWidth: 200 }} defaultValue={0} onChange={this.handleChange}>
+            <Select
+              style={{ minWidth: 200 }}
+              value={taskRequestType}
+              defaultValue={0}
+              onChange={handleChangeTaskRq}
+            >
               <Option value={0}>关键词</Option>
               <Option value={1}>商品口令</Option>
               <Option value={2}>二维码</Option>

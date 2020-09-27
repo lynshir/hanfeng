@@ -1,7 +1,7 @@
 import React from 'react';
 import { extendObservable, action, toJS } from 'mobx';
 import { message } from 'antd';
-import { commonGet } from '@utils/egFetch';
+import { commonGet, commonPost } from '@utils/egFetch';
 import { cloneDeep } from 'lodash';
 import moment from 'moment';
 import { extendMoment } from 'moment-range';
@@ -14,13 +14,13 @@ const exMoment = extendMoment(moment);
 const undef = void 0;
 const initProduct = {
   nameOrder: undef,
-  link: undef,
-  bought: undef,
-  unit: undef,
+  itemUrl: undef,
+  num: undef,
+  price: undef,
   address: undef,
   payNum: undef,
-  priceMin: undef,
-  priceMax: undef,
+  minPrice: undef,
+  maxPrice: undef,
 };
 
 export default class RelTaskModel {
@@ -84,33 +84,47 @@ export default class RelTaskModel {
           tip: '拼多多下单付款任务目前正在内测中，请关注平台实时动态，更多优惠发单价格。',
         },
       ], //平台类型
-      curStep: 1,
+      priceArea: [], //价格区间
+      shopDic: [], //店铺字典
+      curStep: 0, //当前步骤
       shopId: null,
       productRef: null, //商品ref
       timeRangeRef: null, //时间范围ref
       taskStepRef: null, //时间范围ref
-      genderType: 2, //分配接单配置
-      productList: [], //商品列表
+      genderType: 2, //分配接单配置-性别
+      taskName: '',
+      productForms: {}, //商品信息forms
+      productList: [cloneDeep(initProduct)], //商品列表
+      proCategory: 'a', //商品类目
+      cate: '', //商品类目选择值
+      proItemOptions: [], //商品类目数组
       productSaveList: [], //商品列表保存用
       avgDateSetMap: {}, //平均设置
       manualDateSetMap: {}, //手动设置
+      taskRequestType: 0, //任务请求类型
+      sellerRequest: '', //任务要求 - 店家要求 富文本
+      extraRq: '', //额外要求
       timeRange: {
         //时间范围
-        allot: 0, //分配类型
+        splitType: 0, //分配类型
         timeRangeAvg: null,
-        releaseNum: 0,
-        timeEnd: null,
+        taskNum: 0,
+        finishTime: null,
         timeSet: null,
       },
       taskStep: {},
+      keywordNumList: [{ keyword: undefined, num: undefined }],
       editorState: BraftEditor.createEditorState(null), //富文本编辑
+      taskStepList: [],
+      resultData: {}, //保存数据
       get totalOrders() {
         const {
           avgDateSetMap,
           manualDateSetMap,
-          timeRange: { allot },
+          timeRange: { splitType },
         } = this;
-        const dateSetMap = allot === 0 ? avgDateSetMap : allot === 1 ? manualDateSetMap : {};
+        const dateSetMap =
+          splitType === 0 ? avgDateSetMap : splitType === 1 ? manualDateSetMap : {};
         let total = 0;
         Object.keys(dateSetMap).forEach((v) => {
           const item = dateSetMap[v];
@@ -119,6 +133,45 @@ export default class RelTaskModel {
           });
         });
         return total;
+      },
+      get feeDetail() {
+        const { priceArea, resultData, productSaveList } = this;
+        const { taskNum } = resultData; //任务数量
+        const capital = productSaveList.reduce((pre, cur) => {
+          return pre + cur.num * cur.price;
+        }, 0); // 本金
+        //基础佣金
+        const cms = priceArea.find((v) => capital >= v.minPrice && capital <= v.maxPrice)
+          .servicePrice;
+        //运费
+        const freight = 2;
+        const data = [
+          {
+            category: '佣金',
+            detail: `基础佣金：${cms}单`,
+            taskNum,
+            total: cms * taskNum,
+          },
+          {
+            category: '本金',
+            detail: `返还本金：${capital}/单`,
+            taskNum,
+            total: capital * taskNum,
+          },
+          {
+            category: '运费',
+            detail: `返还运费：0.00/单`,
+            taskNum,
+            total: 0,
+          },
+          {
+            category: '服务费',
+            detail: `返还运费：${freight.toFixed(2)}/单`,
+            taskNum,
+            total: freight * taskNum,
+          },
+        ];
+        return data;
       },
       ...(options || {}),
     });
@@ -129,131 +182,130 @@ export default class RelTaskModel {
   setTaskStepRef = (ref) => (this.taskStepRef = ref);
 
   @action
-  getCategory = (targetOption, parentCategoryId) => {
-    console.log('准备请求targetOption', targetOption);
-    commonGet(
-      `/api/gim/category/findOneLevel?categoryType=26&parentCategoryId=${parentCategoryId || 0}`,
-    ).then((v) => {
-      if (v.status !== 'Successful') return message.error('请求分类错误！');
-      if (targetOption) {
-        targetOption.loading = false;
-        targetOption.children = this.dealData(v.data);
-        return (this.options = [...this.options]);
+  getShopDic = () => {
+    commonPost('/shop/query', { page: 1, pageSize: 1000 }).then((v) => {
+      if (v.status === 'Successful') {
+        this.shopDic = v.data.list;
       }
-      this.options = this.dealData(v.data);
     });
   };
 
-  // 任务配置 - 富文本编辑
-
-  //清空内容
-  clearContent = action(() => {
-    msg.confirm('确认清空吗？', () => {
-      this.editorState = ContentUtils.clear(this.editorState);
-    });
-  });
-
-  handleEditorChange = toolFn.debounce((editorState) => {
-    console.log('TCL: EditorStore -> handleEditorChange -> editorState', editorState);
-    this.editorState = editorState;
-  }, 500);
-
-  showImgUpload = action(() => {
-    const {
-      imgUploadStore,
-      imgUploadStore: { myPCStore },
-    } = this.parent;
-    imgUploadStore.reset();
-    imgUploadStore.saveFn = this.getMyPCPic(); //图片管家回调函数
-    imgUploadStore.showModal();
-  });
-  //图片管家保存的回调函数
-  getMyPCPic = action(() => {
-    let basePicSave = action(() => {
-      const { editorState } = this;
-      const {
-        imgUploadStore: { imgList },
-      } = this.parent;
-      const _editorState = ContentUtils.insertMedias(
-        editorState,
-        imgList.map((v) => ({
-          type: 'IMAGE',
-          url: v,
-        })),
-      );
-      this.editorState = _editorState;
-    });
-    return basePicSave;
-  });
-
-  writeBackEditor = action((goodsPicVo, id) => {
-    const { videoUrl } = goodsPicVo;
-    //TODO:待请求html回写
-    commonGet('/api/goods/rest/goodsPic/anon/queryGoodsHtml?id=' + id).then((v) => {
-      console.log(v, 'htmlurl');
-      if (v.data) {
-        this.editorState = ContentUtils.insertHTML(this.editorState, v.data);
-      }
-    });
-  });
-
-  fullHtml = (content) => {
-    return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-       <title>详情预览</title>
-       <meta charset="utf-8" />
-       <meta http-equiv="Cache-Control" content="no-store" />
-       <meta http-equiv="expires" content="0">
-       <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
-       <meta http-equiv="Pragma" content="no-cache">
-       <meta name="viewport" content="width=device-width, initial-scale=1" />
-    </head>
-    <body>
-    ${content}
-    </body>
-    </html>`;
-  };
-
-  validateContent = () => {
-    let isEmpty = this.editorState.isEmpty();
-    console.log(isEmpty, '富文本是否空！');
-    if (isEmpty) return false;
-    if (!isEmpty) {
-      const { blocks } = this.editorState.toRAW(true);
-      console.log(blocks, '富文本-blocks'); //FIXME:日后若校验错误，需要看这里用户输入的值都可能是什么，官方未提供校验回车空的方法
-      for (let item of blocks) {
-        const { text, entityRanges } = item;
-        if (text.trim() || entityRanges.length) return true;
-      }
-      return false;
-    }
-  };
-
-  relaseContent = async () => {
-    if (!this.validateContent()) {
-      msg.error('请填写图文详情！');
-      return false;
-    }
-    const htmlContent = this.editorState.toHTML();
-    // console.log(htmlContent);
-    // const fullHtml = this.fullHtml(htmlContent)
-    const formData = new FormData();
-    formData.append('file', new File([htmlContent], 'index.html'));
-    formData.append('moduleType', 'productDetail');
-    formData.append('title', 'productDetailImg');
-    return new Promise((resolve, reject) => {
-      commonPost('/api/ossItem/uploadfile', {}, { headers: {}, body: formData }).then((v) => {
-        if (v.status === 'Successful') {
-          //返回html地址
-          resolve(v);
-        } else {
-          reject(false);
+  @action
+  getPrice = () => {
+    commonGet('/itemPrice/get').then((v) => {
+      if (v.status === 'Successful') {
+        if (_.isObject(v.data)) {
+          this.priceArea = v.data;
         }
-      });
+      }
     });
   };
+
+  @action
+  handleChangeTaskRq = (v) => {
+    console.log('handleChangeTaskRq -> v', v);
+    this.taskRequestType = v;
+  };
+
+  @action
+  shopChange = (v) => {
+    console.log('shopChange -> v', v);
+    this.shopId = v;
+  };
+
+  @action
+  onEditorBlur = (type, html) => {
+    console.log('onEditorBlur -> type, html---', type, html);
+    if (type === 'sellerRequest') this['sellerRequest'] = html;
+    if (type === 'extraRq') this['extraRq'] = html;
+  };
+
+  //获取商品分类
+  @action
+  getCategory = (targetOption, parentCategoryId) => {
+    commonGet(`/cate/get`).then((v) => {
+      if (v.status !== 'Successful') return message.error('请求分类错误！');
+      const data = this.dealData(v.data);
+      console.log(data, '商品分类');
+      this.proItemOptions = data;
+    });
+  };
+
+  //选择商品分类
+  @action
+  proItemChange = (value, selectedOptions) => {
+    console.log('proItemChange -> value', value, toJS(selectedOptions));
+    const str = selectedOptions.reduce((pre, cur) => {
+      return pre ? pre + '/' + cur.label : cur.label;
+    }, '');
+    this.cate = str;
+  };
+
+  //处理分类数据
+  dealData = (sNodes) => {
+    let i,
+      l,
+      key = 'id',
+      parentKey = 'pid',
+      childKey = 'children';
+    if (!key || key == '' || !sNodes) return [];
+
+    if (Array.isArray(sNodes)) {
+      let r = [];
+      let tmpMap = [];
+      for (i = 0, l = sNodes.length; i < l; i++) {
+        let node = sNodes[i];
+        node['label'] = node['cateName'];
+        node['value'] = node[key];
+        tmpMap[node[key]] = node;
+      }
+      for (i = 0, l = sNodes.length; i < l; i++) {
+        if (tmpMap[sNodes[i][parentKey]] && sNodes[i][key] != sNodes[i][parentKey]) {
+          if (!tmpMap[sNodes[i][parentKey]][childKey]) tmpMap[sNodes[i][parentKey]][childKey] = [];
+          tmpMap[sNodes[i][parentKey]][childKey].push(sNodes[i]);
+        } else {
+          r.push(sNodes[i]);
+        }
+      }
+      return r;
+    } else {
+      return [sNodes];
+    }
+  };
+
+  //获取商品信息
+  @action
+  getProductInfo = (i) => {
+    console.log(toJS(this.productSaveList), i);
+    const pItem = this.productSaveList[i];
+    const itemUrl = pItem['itemUrl'];
+    if (!itemUrl) return;
+    commonGet('/product/getProduct?url=' + encodeURIComponent(itemUrl)).then((v) => {
+      if (v.status === 'Successful') {
+        console.log('getProductInfo -> v', v);
+        const arr = toJS(this.productSaveList);
+        let temp = arr[i];
+        let obj = Object.assign({}, temp, v.data);
+        arr[i] = obj;
+        this.productList = arr;
+        this.productSaveList[i] = obj;
+      }
+    });
+  };
+
+  onKeywordChange = action((key, i, e) => {
+    this.keywordNumList[i][key] = e.target.value;
+  });
+
+  //添加一项关键词
+  onAddKeyWord = action(() => {
+    this.keywordNumList.push({ keyword: undefined, num: undefined });
+  });
+
+  //删除一项关键词
+  onDeleteKeyWord = action((i) => {
+    this.keywordNumList.splice(i, 1);
+  });
 
   //任务配置 - 任务步骤Formchange
   onTaskFormChange = action((changedFields, allFields) => {
@@ -300,7 +352,7 @@ export default class RelTaskModel {
           }
           _value = value.format('YYYY-MM-DD hh:mm:ss');
           break;
-        case 'timeEnd':
+        case 'finishTime':
           if (!value) {
             _value = value;
             break;
@@ -324,20 +376,25 @@ export default class RelTaskModel {
   @action
   sendOrderSet = () => {
     console.log(this.timeRangeRef.getFieldsValue(), 'this.setTimeRangeRef.getFieldsValue()');
-    const { allot, releaseNum, timeRangeAvg, timeRangeManual } = this.timeRangeRef.getFieldsValue();
-    if (!releaseNum || releaseNum < 0) return;
-    if (allot === 0 && !timeRangeAvg) return;
-    if (allot === 1 && !timeRangeManual) return;
-    if (allot === 0) {
+    const {
+      splitType,
+      taskNum,
+      timeRangeAvg,
+      timeRangeManual,
+    } = this.timeRangeRef.getFieldsValue();
+    if (!taskNum || taskNum < 0) return;
+    if (splitType === 0 && !timeRangeAvg) return;
+    if (splitType === 1 && !timeRangeManual) return;
+    if (splitType === 0) {
       let [start, end] = timeRangeAvg;
       start = start.valueOf(); //毫秒
       end = end.valueOf(); //毫秒
 
       const sub = end.valueOf() - start.valueOf();
       if (sub <= 0) return;
-      const space = sub / releaseNum;
+      const space = sub / taskNum;
       const dateSet = {};
-      for (let i = 1; i <= releaseNum; i++) {
+      for (let i = 1; i <= taskNum; i++) {
         const ns = start + space * i; //n个space
         const year = moment(ns).format('YYYY-MM-DD');
         const hour = moment(ns).format('HH:mm:ss');
@@ -350,7 +407,7 @@ export default class RelTaskModel {
       this.avgDateSetMap = dateSet;
       console.log(dateSet, 'dateSetdateSet');
     }
-    if (allot === 1) {
+    if (splitType === 1) {
       let [start, end] = timeRangeManual;
       const range = exMoment.range(exMoment(start), exMoment(end));
       const diffDays = range.diff('days');
@@ -373,7 +430,7 @@ export default class RelTaskModel {
   @action
   onDateSetChange = (year, hour, e) => {
     console.log('RelTaskModel -> onDateSetChange -> year,hour', year, hour, e.target.value);
-    const { allot } = this.timeRangeRef.getFieldsValue();
+    const { splitType } = this.timeRangeRef.getFieldsValue();
     const { avgDateSetMap, manualDateSetMap } = this;
     try {
       manualDateSetMap[year].find((v) => v.hour === hour).number = e.target.value;
@@ -386,13 +443,23 @@ export default class RelTaskModel {
   @action
   onFormItemChange = (formName, changedFields, forms) => {
     console.log(
-      'RelTaskModel -> onFormItemChange -> formName, changedFields, forms',
+      'RelTaskModel -> onFormItemChange -> formName, changedFields, forms ---',
       formName,
       changedFields,
       forms,
     );
+    this.productForms = forms;
     if (changedFields.length) {
-      this.productSaveList = Object.keys(forms).map((v) => forms[v].getFieldsValue());
+      const saveList = toJS(this.productSaveList);
+      const formList = Object.keys(forms).map((v) => forms[v].getFieldsValue());
+      if (!saveList.length) {
+        this.productSaveList = formList;
+      } else {
+        formList.forEach((el, i) => {
+          saveList[i] ? Object.assign(saveList[i], el) : (saveList[i] = el);
+        });
+        this.productSaveList = saveList;
+      }
     }
   };
 
@@ -431,13 +498,207 @@ export default class RelTaskModel {
     this.genderType = e.target.value;
   };
 
+  //基础配置 - inputChange
+  @action
+  onInputChange = (type, e) => {
+    console.log('onInputChange -> type, e', type, e.target.value);
+    this[type] = e.target.value;
+  };
+
+  getTimeRange = () => {
+    const { timeRangeRef, avgDateSetMap, manualDateSetMap } = this;
+    const {
+      splitType,
+      taskNum,
+      timeRangeAvg,
+      timeRangeManual,
+      finishTime,
+    } = timeRangeRef.getFieldsValue();
+    console.log(timeRangeRef.getFieldsValue(), 'timeRangeRef.getFieldsValue()');
+    let startTime = '',
+      endTime = '';
+    let hm = 'YYYY-MM-DD hh:mm:ss',
+      ym = 'YYYY-MM-DD';
+    if (splitType === 0) {
+      if (!timeRangeAvg) {
+        return message.error('请选择日期范围'), false;
+      }
+      [startTime, endTime] = [timeRangeAvg[0].format(hm), timeRangeAvg[1].format(hm)];
+      if (!startTime || !endTime) return message.error('请选择日期范围'), false;
+    }
+    if (splitType === 1) {
+      if (!timeRangeManual) {
+        return message.error('请选择日期范围'), false;
+      }
+      [startTime, endTime] = [timeRangeManual[0].format(ym), timeRangeManual[1].format(ym)];
+      if (!startTime || !endTime) return message.error('请选择日期范围'), false;
+    }
+    if (splitType === 2) {
+      startTime = timeRangeRef;
+      if (!startTime) return message.error('请选择开始时间'), false;
+    }
+    if (!finishTime) return message.error('请选择终止时间'), false;
+    let taskSplitTimeNumList = Object.keys(
+      splitType === 0 ? avgDateSetMap : splitType === 1 ? manualDateSetMap : {},
+    ).reduce((pre, cur) => {
+      return [
+        ...pre,
+        ...avgDateSetMap[cur].map((v) => {
+          return {
+            time: cur + ' ' + v.hour,
+            num: v.number,
+          };
+        }),
+      ];
+    }, []);
+    return {
+      splitType,
+      taskNum,
+      startTime,
+      endTime,
+      finishTime: finishTime.format(hm),
+      taskSplitTimeNumList,
+    };
+  };
+
+  getTaskStep = () => {
+    const {
+      collect,
+      collectReview,
+      collectScreenShot,
+      extReq,
+      extReqReview,
+      extReqScreenShot,
+      joinCart,
+      joinCartReview,
+      joinCartScreenShot,
+      confirmOrderScreenShot,
+      confirmSupport = [],
+      confirmOrder,
+      confirmFare,
+    } = this.taskStepRef.getFieldsValue();
+    const { extraRq } = this;
+    const taskStepList = [
+      {
+        stepType: 4,
+        approveType: confirmOrder,
+        screenShot: confirmOrderScreenShot,
+        otherRequest: '',
+        payType: confirmSupport.join(','),
+        freeShipping: confirmFare,
+      },
+    ];
+    if (collect === 1) {
+      taskStepList.push({
+        stepType: 1,
+        approveType: collectReview,
+        screenShot: collectScreenShot,
+        otherRequest: '',
+      });
+    }
+    if (extReq === 1) {
+      taskStepList.push({
+        stepType: 2,
+        approveType: extReqReview,
+        screenShot: extReqScreenShot,
+        otherRequest: extraRq,
+      });
+    }
+    if (joinCart === 1) {
+      taskStepList.push({
+        stepType: 3,
+        approveType: joinCartReview,
+        screenShot: joinCartScreenShot,
+        otherRequest: '',
+      });
+    }
+    this.taskStepList = taskStepList;
+    return taskStepList;
+  };
+
+  validatePage = () => {
+    const {
+      shopId,
+      platType,
+      genderType,
+      taskName,
+      productForms,
+      cate,
+      productSaveList,
+      taskRequestType,
+      keywordNumList,
+      searchKey, //TODO:
+      sellerRequest,
+    } = this;
+    if (!taskName) {
+      message.error('请输入任务名称');
+      return false;
+    }
+    let taskType = platType.find((v) => v.active).code;
+    let itemList = toJS(productSaveList);
+    console.log('publish -> itemList', itemList);
+    for (let i = 0; i < itemList.length; i++) {
+      const { itemId, itemUrl, shopName, title, num, price, address, payNum } = itemList[i];
+      if (!itemId || !itemUrl || !shopName || !title) return message.error('请获取商品链接'), false;
+      if (!num) return message.error('输入拍下件数'), false;
+      if (!price) return message.error('输入商品单价'), false;
+      if (!address) return message.error('请输入店铺所在地址'), false;
+      if (!payNum) return message.error('请输入付款人数'), false;
+    }
+
+    let timeRange = this.getTimeRange();
+    if (!timeRange) return false;
+
+    for (let i = 0; i < keywordNumList.length; i++) {
+      const { keyword, num } = keywordNumList[i];
+      if (!keyword || !num) {
+        message.error('请输入关键词和数量！');
+        return false;
+      }
+    }
+
+    // const totalNum = keywordNumList.reduce((pre, cur) => {
+    //   return pre + cur.num
+    // }, 0)
+    // let taskNum = timeRange.taskNum;
+    // if (totalNum > taskNum) return message.error('关键词单量超出了发布总量！');
+
+    let taskStepList = toJS(this.getTaskStep());
+    const result = {
+      taskType,
+      shopId,
+      genderType,
+      taskName,
+      cate,
+      itemList,
+      taskRequestType,
+      keywordNumList: toJS(keywordNumList),
+      searchKey,
+      sellerRequest,
+      taskStepList,
+      ...this.getTimeRange(),
+    };
+    this.resultData = result;
+    console.log(result, '---result');
+    return result;
+  };
+
+  publish = () => {
+    const result = this.resultData;
+    commonPost('/taskOrder/insert', result).then((v) => {});
+  };
+
   @action
   nextStep = () => {
     const { curStep, shopId } = this;
     if (curStep < 2) {
-      // if (curStep === 0) {
-      //   if (!shopId) return message.error('请选择店铺！');
-      // }
+      if (curStep === 0) {
+        if (!shopId) return message.error('请选择店铺！');
+      }
+      if (curStep === 1) {
+        const result = this.validatePage();
+        if (!result) return;
+      }
       this.curStep++;
     }
   };
