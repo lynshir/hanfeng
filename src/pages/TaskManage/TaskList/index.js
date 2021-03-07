@@ -21,7 +21,9 @@ const formItemLayout = {
 
 @observer
 class Filter extends Component {
-  componentDidMount() {}
+  componentDidMount() {
+    store.getShopDic();
+  }
 
   selectItem = (dic, name, label) => {
     return (
@@ -70,13 +72,14 @@ class Filter extends Component {
               <RangePicker showTime format="YYYY-MM-DD HH:mm:ss" />
             </Form.Item>
           </Col>
-          {this.selectItem(plaformDic, 'platform', '平台')}
-          {this.selectItem(shopDic, 'shop', '店铺')}
+          {this.selectItem(plaformDic, 'platformType', '平台')}
+          {this.selectItem(shopDic, 'shopId', '店铺')}
           {this.selectItem(taskTypeDic, 'taskType', '类型')}
           {this.selectItem(statusDic, 'status', '状态')}
-          {this.inputItem('productId', '商品ID', '请输入搜索条件商品ID')}
-          {this.inputItem('taskNo', '任务编号', '请输入任务编号')}
-          {this.selectItem(completeDic, 'complete', '完成情况')}
+          {this.inputItem('itemId', '商品ID', '请输入搜索条件商品ID')}
+          {this.inputItem('taskName', '任务名称', '请输入任务名称')}
+          {this.inputItem('taskOrderNo', '任务编号', '请输入任务编号')}
+          {this.selectItem(completeDic, 'finishStatus', '完成情况')}
           <Col span={8} style={{ textAlign: 'center' }}>
             <Button type="primary" onClick={onSearch}>
               搜索

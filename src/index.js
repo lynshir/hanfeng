@@ -42,7 +42,7 @@ function Main() {
           <Menu
             theme="light"
             defaultOpenKeys={['accountManage']}
-            defaultSelectedKeys={[pathname || 'dashboard']}
+            defaultSelectedKeys={[pathname || 'relTask']}
             mode="inline"
           >
             <Menu.Item key="dashboard" icon={<DashboardOutlined />}>

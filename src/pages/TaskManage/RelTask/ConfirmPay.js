@@ -69,7 +69,7 @@ class ConfirmPay extends Component {
   render() {
     const {
       store,
-      store: { nextStep, prevStep, feeDetail },
+      store: { nextStep, prevStep, feeDetail, confirmTaskInfo, publish },
     } = this.props;
     return (
       <div className="baseConfig confirmPayWrap">
@@ -98,7 +98,7 @@ class ConfirmPay extends Component {
           }}
         />
         <CardTitle title="任务信息" />
-        <Table columns={infoColumns} pagination={false} />
+        <Table columns={infoColumns} dataSource={confirmTaskInfo} pagination={false} />
         <div className="pannel cfPan">
           <Row justify="space-between">
             <Col>
@@ -110,9 +110,9 @@ class ConfirmPay extends Component {
             </Col>
             <Col>
               <Space>
-                <Button onClick={prevStep}>保存草稿</Button>
+                <Button onClick={publish.bind(this, 3)}>保存草稿</Button>
                 <Button onClick={prevStep}>返回上一步</Button>
-                <Button>确认支付</Button>
+                <Button onClick={publish.bind(this, 0)}>确认支付</Button>
               </Space>
             </Col>
           </Row>

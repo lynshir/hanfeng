@@ -1,7 +1,7 @@
 import React from 'react';
 import { extendObservable, action, toJS } from 'mobx';
 import { message } from 'antd';
-import { commonGet } from '@utils/egFetch';
+import { commonGet, commonPost } from '@utils/egFetch';
 import { cloneDeep } from 'lodash';
 import moment from 'moment';
 import { extendMoment } from 'moment-range';
@@ -9,6 +9,13 @@ import { extendMoment } from 'moment-range';
 import toolFn from '@utils/toolFn';
 
 const undef = void 0;
+
+const initPage = {
+  page: 1,
+  pageSize: 20,
+  sord: '',
+  sidx: '',
+};
 
 export default class TaskListModel {
   constructor(options) {
@@ -28,13 +35,15 @@ export default class TaskListModel {
         { code: 1, name: '未完成' },
         { code: 2, name: '进行中' },
       ],
-      completeDic: [
-        { code: 1, name: '未完成' },
-        { code: 2, name: '进行中' },
+      finishStatus: [
+        { code: true, name: '无剩余' },
+        { code: false, name: '有剩余' },
       ],
       taskTypeDic: [
-        { code: 1, name: '手机淘宝APP搜索下单任务' },
-        { code: 2, name: '京手机淘宝APP真实刷搜索流量' },
+        { code: 0, name: '未开始' },
+        { code: 1, name: '进行中' },
+        { code: 2, name: '已结束' },
+        { code: 3, name: '草稿' },
       ],
       totalInfo: {
         taskToal: 30,
@@ -43,11 +52,66 @@ export default class TaskListModel {
         ywc: 10,
         wwc: 20,
       },
+      dataList: [],
+      pagination: {
+        ...initPage,
+      },
+      get filter() {
+        const { pagination } = this;
+        const fields = this.taskListRef.getFieldsValue();
+        const vo = Object.keys(fields).reduce((pre, cur) => {
+          const v = fields[cur];
+          return v
+            ? {
+                ...pre,
+                cur: v,
+              }
+            : {
+                ...pre,
+              };
+        }, {});
+        const result = {
+          vo: { ...vo },
+          ...pagination,
+        };
+        return result;
+      },
       ...(options || {}),
     });
   }
 
-  setTaskListRef = (ref) => (this.taskListRef = ref);
+  setTaskStepRef = (ref) => (this.taskListRef = ref);
 
-  onSearch = action(() => {});
+  @action
+  getShopDic = () => {
+    commonPost('/shop/query', { page: 1, pageSize: 1000 }).then((v) => {
+      if (v.status === 'Successful') {
+        const list = v?.data?.list || [];
+        this.shopDic = list.map((v) => {
+          const { shopName, id } = v;
+          return {
+            name: shopName,
+            code: id,
+          };
+        });
+      }
+    });
+  };
+
+  onSearch = action(() => {
+    const { filter } = this;
+    commonPost('/taskOrder/query', filter).then((v) => {
+      if (v.status === 'Successful') {
+        const data = v?.data || {};
+        const { list, page, pageSize, totalCount, totalPageCount } = data;
+        this.dataList = list;
+        this.pagination = {
+          page,
+          pageSize,
+          totalCount,
+          totalPageCount,
+        };
+      }
+    });
+  });
 }

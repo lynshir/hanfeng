@@ -23,12 +23,10 @@ const Register = () => {
     console.log('Success:', values);
     commonPost('/user/register', { ...values }).then((v) => {
       console.log('onFinish -> v', v);
-      if(v.status === "Successful"){ 
-        msg.confirm('注册成功，是否跳转到登录？', () => {
-          window.location.href = '/member-login'
-        })
-        
-      }
+      if (v.status !== 'Successful') return msg.error(v.data)
+      msg.confirm('注册成功，是否跳转到登录？', () => {
+        window.location.href = '/member-login'
+      })
     });
   };
 

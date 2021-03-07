@@ -35,6 +35,7 @@ class TaskPannel extends Component {
   }
 
   render() {
+    const { dataList } = this.props.store;
     return (
       <div className="taskListPannel">
         <CardTitle title="任务列表" />
@@ -42,58 +43,61 @@ class TaskPannel extends Component {
           <Button type="primary">终止任务</Button>
         </div>
         <div className="pannel">
-          <Row>
-            <Col span={16}>
-              <div className="flex flex-lc">
-                <img
-                  alt=""
-                  src="https://img.alicdn.com/imgextra/i2/2095638804/O1CN01znxBLJ2EuHa3HEr66_!!2095638804-0-lubanu-s.jpg"
-                  className="taskPanImg mr10"
-                />
-                <div style={{ width: '70%' }}>
-                  <Row className="f16 f500 mb10">
-                    机能工装夹克男士潮牌嘻哈立领外套港风ins潮流百搭宽松休闲男装
-                  </Row>
-                  <Row className="mb10">
-                    <span>创建时间：2020-08-23 17:27:01</span>
-                    <div className="smark">已结束</div>
-                  </Row>
-                  <Row>任务编号：BTK0485202008230107</Row>
-                  <Row>店铺：v37旗舰店（ 淘宝 ）</Row>
-                </div>
-              </div>
-            </Col>
-            <Col span={8}>
-              <div className="flexc justify-sb hp100">
-                <Row align="middle" justify="space-between">
-                  <Col className="flexc">
-                    <span className="title cl9e f14 f500">任务总数</span>
-                    <span className="numInfo cl3 f18">10</span>
-                  </Col>
-                  <Col className="flexc">
-                    <span className="title cl9e f14 f500">任务总数</span>
-                    <span className="numInfo cl3 f18">10</span>
-                  </Col>
-                  <Col className="flexc">
-                    <span className="title cl9e f14 f500">任务总数</span>
-                    <span className="numInfo cl3 f18">10</span>
-                  </Col>
-                  <Col className="flexc">
-                    <span className="title cl9e f14 f500">任务总数</span>
-                    <span className="numInfo cl3 f18">10</span>
-                  </Col>
-                  <Col className="flexc">
-                    <span className="title cl9e f14 f500">任务总数</span>
-                    <span className="numInfo cl3 f18">10</span>
-                  </Col>
-                </Row>
-                <Row justify="space-between" align="middle">
-                  <Col className="bgf2 pd5">2020-08-23 至 2020-08-23</Col>
-                  <Col>复制</Col>
-                </Row>
-              </div>
-            </Col>
-          </Row>
+          {dataList.map((v) => {
+            const { title, createTime, task_order_no } = v;
+            return (
+              <Row>
+                <Col span={16}>
+                  <div className="flex flex-lc">
+                    <img
+                      alt=""
+                      src="https://img.alicdn.com/imgextra/i2/2095638804/O1CN01znxBLJ2EuHa3HEr66_!!2095638804-0-lubanu-s.jpg"
+                      className="taskPanImg mr10"
+                    />
+                    <div style={{ width: '70%' }}>
+                      <Row className="f16 f500 mb10">{title}</Row>
+                      <Row className="mb10">
+                        <span>{createTime}</span>
+                        <div className="smark">已结束</div>
+                      </Row>
+                      <Row>任务编号：{task_order_no}</Row>
+                      <Row>店铺：{shopName}</Row>
+                    </div>
+                  </div>
+                </Col>
+                <Col span={8}>
+                  <div className="flexc justify-sb hp100">
+                    <Row align="middle" justify="space-between">
+                      <Col className="flexc">
+                        <span className="title cl9e f14 f500">任务总数</span>
+                        <span className="numInfo cl3 f18">10</span>
+                      </Col>
+                      <Col className="flexc">
+                        <span className="title cl9e f14 f500">任务总数</span>
+                        <span className="numInfo cl3 f18">10</span>
+                      </Col>
+                      <Col className="flexc">
+                        <span className="title cl9e f14 f500">任务总数</span>
+                        <span className="numInfo cl3 f18">10</span>
+                      </Col>
+                      <Col className="flexc">
+                        <span className="title cl9e f14 f500">任务总数</span>
+                        <span className="numInfo cl3 f18">10</span>
+                      </Col>
+                      <Col className="flexc">
+                        <span className="title cl9e f14 f500">任务总数</span>
+                        <span className="numInfo cl3 f18">10</span>
+                      </Col>
+                    </Row>
+                    <Row justify="space-between" align="middle">
+                      <Col className="bgf2 pd5">2020-08-23 至 2020-08-23</Col>
+                      <Col>复制</Col>
+                    </Row>
+                  </div>
+                </Col>
+              </Row>
+            );
+          })}
         </div>
         <Row justify="flex-end">
           <Pagination

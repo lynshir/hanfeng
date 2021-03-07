@@ -173,6 +173,45 @@ export default class RelTaskModel {
         ];
         return data;
       },
+      get confirmTaskInfo() {
+        const { platType, shopDic, shopId, timeRange: { taskNum }, productSaveList, resultData: { taskStepList } } = this
+        const taskType = platType.find(v => v.active === true).title
+        const shopName = shopDic.find(v => v.id === shopId).shopName
+        const proTitle = productSaveList.map(v => v.title).join(';');
+        const proPrice = productSaveList.map(v => v.price).join(';');
+        const proNum = productSaveList.map(v => v.num).join(';');
+        let tsTxt = '' //taskStepTxt
+        const needShot = (isNeed) => isNeed ? '需要截图' : '无需截图'
+        for (let i = 0; i < taskStepList.length; i++) {
+          const item = taskStepList[i];
+          const { stepType, screenShot } = item
+          switch (stepType) {
+            case 1:
+              tsTxt += (`收藏商品（${needShot(screenShot)}）-`);
+              break;
+            case 2:
+              tsTxt += (`额外要求（${needShot(screenShot)}）-`);
+              break;
+            case 3:
+              tsTxt += (`加购物车（${needShot(screenShot)}）-`);
+              break;
+            case 4:
+              tsTxt += (`下单（${needShot(screenShot)}）-`);
+              break;
+            default:
+              break;
+          }
+        }
+        return [
+          { item: '任务类型', info: taskType },
+          { item: '店铺', info: shopName },
+          { item: '商品标题', info: proTitle },
+          { item: '商品实际成交价（单件）', info: proPrice },
+          { item: '拍下件数', info: proNum },
+          { item: '发布数量', info: taskNum },
+          { item: '任务步骤', info: tsTxt },
+        ]
+      },
       ...(options || {}),
     });
   }
@@ -578,16 +617,7 @@ export default class RelTaskModel {
       confirmFare,
     } = this.taskStepRef.getFieldsValue();
     const { extraRq } = this;
-    const taskStepList = [
-      {
-        stepType: 4,
-        approveType: confirmOrder,
-        screenShot: confirmOrderScreenShot,
-        otherRequest: '',
-        payType: confirmSupport.join(','),
-        freeShipping: confirmFare,
-      },
-    ];
+    const taskStepList = [];
     if (collect === 1) {
       taskStepList.push({
         stepType: 1,
@@ -612,6 +642,14 @@ export default class RelTaskModel {
         otherRequest: '',
       });
     }
+    taskStepList.push({
+      stepType: 4,
+      approveType: confirmOrder,
+      screenShot: confirmOrderScreenShot,
+      otherRequest: '',
+      payType: confirmSupport.join(','),
+      freeShipping: confirmFare,
+    })
     this.taskStepList = taskStepList;
     return taskStepList;
   };
@@ -683,9 +721,13 @@ export default class RelTaskModel {
     return result;
   };
 
-  publish = () => {
+  publish = (status) => {
     const result = this.resultData;
-    commonPost('/taskOrder/insert', result).then((v) => {});
+    if (status) { result.status = 3 }
+    commonPost('/taskOrder/insert', result).then((v) => {
+      if (v.status !== 'Successful') return message.error(v.data);
+      return message.success('新建成功！')
+    });
   };
 
   @action

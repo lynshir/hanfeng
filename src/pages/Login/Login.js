@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Button, Checkbox, Row } from 'antd';
+import { Form, Input, Button, Checkbox, Row, message } from 'antd';
 
 import './index.scss';
 
@@ -26,15 +26,14 @@ const Login = () => {
     const str = `username=${username}&password=${password}`;
     commonPostString('/loginVerify', str).then((v) => {
       console.log('onFinish -> v', v);
-      if (v.status === 'Successful') {
-        let data = v.data;
-        if (data) {
-          const [JSESSIONID, type] = data.split('@@');
-          console.log('onFinish -> JSESSIONID, type', JSESSIONID, type);
-          if (type === '0') {
-            console.log('pc登录');
-            window.location.href = '/member-center/dashboard';
-          }
+      if (v.status !== 'Successful') return message.error(v.data)
+      let data = v.data;
+      if (data) {
+        const [JSESSIONID, type] = data.split('@@');
+        console.log('onFinish -> JSESSIONID, type', JSESSIONID, type);
+        if (type === '0') {
+          console.log('pc登录');
+          window.location.href = '/member-center/dashboard';
         }
       }
     });
